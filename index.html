@@ -49,19 +49,31 @@
       color: #888;
       font-size: 12px;
     }
+    .test-type {
+      margin: 15px 0;
+    }
+    .test-type label {
+      margin: 0 15px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
   <h1>Concentration Calculator</h1>
   <div class="guide">
     <p><strong>Instructions:</strong></p>
-    <p><strong>Reference Photo (Optional):</strong> Upload and crop the white area of the tape strip to provide a baseline color (In case of test tube testing you can skip this). If you skip this, a default black reference will be used.</p>
+    <p><strong>Reference Photo (In case of Test Tube Testing):</strong> Upload and crop the white area of the tape strip to provide a baseline color. If you skip this, a default black reference will be used.</p>
     <p><strong>Sample Photo:</strong> Upload and crop the uniformly colored part for accurate analysis.</p>
     <p>Click "Calculate Concentration" after cropping both (or just the sample).</p>
   </div>
 
-  <div>
-    <h2>Reference Photo <span class="hint">(Optional - Select white area)</span></h2>
+  <div class="test-type">
+    <label><input type="radio" name="testType" value="tube" checked> Test Tube Testing</label>
+    <label><input type="radio" name="testType" value="substrate"> Substrate Testing</label>
+  </div>
+
+  <div id="referenceSection" style="display:none;">
+    <h2>Reference Photo</h2>
     <input type="file" id="referenceInput" accept="image/*">
     <div class="image-container">
       <img id="referenceImg" style="display:none;">
@@ -69,7 +81,7 @@
   </div>
 
   <div>
-    <h2>Sample Photo <span class="hint">(Required - Select colored area)</span></h2>
+    <h2>Sample Photo</h2>
     <input type="file" id="sampleInput" accept="image/*">
     <div class="image-container">
       <img id="sampleImg" style="display:none;">
@@ -131,7 +143,7 @@
       const sampleAvg = calculateAverageRGB(sampleCanvas);
 
       let referenceAvg;
-      if (referenceCropper) {
+      if (referenceCropper && document.querySelector('input[name="testType"]:checked').value === 'substrate') {
         const referenceCanvas = referenceCropper.getCroppedCanvas();
         referenceAvg = calculateAverageRGB(referenceCanvas);
       } else {
@@ -193,6 +205,18 @@
       }
       return hue;
     }
+
+    // Toggle reference section
+    document.querySelectorAll('input[name="testType"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        const referenceSection = document.getElementById('referenceSection');
+        if (this.value === 'substrate') {
+          referenceSection.style.display = 'block';
+        } else {
+          referenceSection.style.display = 'none';
+        }
+      });
+    });
   </script>
 </body>
 </html>
